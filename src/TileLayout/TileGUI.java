@@ -38,9 +38,6 @@ public class TileGUI extends JFrame {
             buttons[i] = new JButton(String.valueOf(i));
             gamePanel.add(buttons[i]);
         }
-        gamePanel.remove(6);
-        gamePanel.add(new JPanel(), 6);
-
 
     }
 
