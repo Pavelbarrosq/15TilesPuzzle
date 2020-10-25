@@ -1,8 +1,12 @@
 package Tiles;
 
+import TileLayout.TileGUI;
+
 public class TileMain {
 
     public static void main(String[] args) {
-        System.out.println("Tjena");
+
+        TileGUI game = new TileGUI();
     }
 }
+
