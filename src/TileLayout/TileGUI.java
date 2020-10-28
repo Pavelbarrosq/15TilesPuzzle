@@ -14,12 +14,13 @@ public class TileGUI extends JFrame {
     protected JPanel gamePanel;
     protected JPanel buttonPanel = new JPanel();
     protected JButton newGame = new JButton("New game");
+    protected String [] winningString = new String[size - 1];
 
     public ArrayList<Integer> numberList = new ArrayList<>(size);
     public int emptyCell;
 
     public TileGUI() {
-
+        fillWinningArray();
 
         buttonPanel.add(newGame);
         newGame.addActionListener(new ActionListener() {
@@ -122,8 +123,13 @@ public class TileGUI extends JFrame {
                         buttons[rowForButtonPressed][colForButtonPressed].setVisible(false);
                         emptyCell = getIndexOfBoard(rowForButtonPressed, colForButtonPressed);
 
-                    }
 
+
+                    }
+                        if (isFinished()){
+                            //TODO, fixa så att knapparna diaktiveras.
+                            JOptionPane.showMessageDialog(null, "Du vann, grattis!");
+                        }
                 }
             });
 
@@ -150,6 +156,23 @@ public class TileGUI extends JFrame {
 
     public int getIndexOfBoard(int i, int j) {
         return ((i * 4) + j);
+    }
+    public void fillWinningArray() {
+        for (int i = 1; i < size; i++){
+            winningString[i - 1] = Integer.toString(i);
+        }
+    }
+    private boolean isFinished() {
+        for (int i = winningString.length - 1; i >= 0; i--) {
+            int row = i / 4;
+            int col = i % 4;
+            String number = buttons[row][col].getText();
+            if (!number.equals(winningString[i])) {
+                return false;
+
+            }
+        }
+        return true;
     }
 
 }
