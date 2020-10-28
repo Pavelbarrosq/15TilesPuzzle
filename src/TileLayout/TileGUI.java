@@ -1,7 +1,5 @@
 package TileLayout;
 
-import TileModel.TileLogic;
-
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -10,13 +8,13 @@ import java.util.Collections;
 
 public class TileGUI extends JFrame {
     protected static final int size = 16;
-    protected JButton buttons[][] = new JButton[4][4];
+    protected JButton[][] buttons = new JButton[4][4];
     protected JPanel gamePanel;
     protected JPanel buttonPanel = new JPanel();
     protected JButton newGame = new JButton("New game");
     protected String [] winningString = new String[size - 1];
 
-    public ArrayList<Integer> numberList = new ArrayList<>(size);
+    public ArrayList<Integer> orderedNumbersList = new ArrayList<>(size);
     public int emptyCell;
 
     public TileGUI() {
@@ -26,10 +24,8 @@ public class TileGUI extends JFrame {
         newGame.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Tar bort game pane och skapar upp ett nytt igen.
                 remove(gamePanel);
                 startNewGame();
-
             }
         });
 
@@ -42,57 +38,46 @@ public class TileGUI extends JFrame {
         startNewGame();
     }
 
+    //-----------------
+
     private void startNewGame() {
-        numberList.clear();
+        orderedNumbersList.clear();
         gamePanel = new JPanel();
 
-        //Addar nummer från 1-15 till listan och sedan shufflar det.
         for (int i = 0; i < size; i++) {
-            numberList.add(i, i);
+            orderedNumbersList.add(i, i);
         }
-        Collections.shuffle(numberList);
+
+        Collections.shuffle(orderedNumbersList);
 
         for (int i = 0; i < size; i++) {
             int col = i % 4;
             int row = i / 4;
-            buttons[row][col] = new JButton(String.valueOf(numberList.get(i)));
+            buttons[row][col] = new JButton(String.valueOf(orderedNumbersList.get(i)));
 
-            if (numberList.get(i) == 0) {
+            if (orderedNumbersList.get(i) == 0) {
                 emptyCell = i;
                 buttons[row][col].setVisible(false);
             }
 
             buttons[row][col].setForeground(Color.black);
-
-            //KNAPPARNAS ACTION LISTENER
             buttons[row][col].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton buttonPressed = (JButton)e.getSource();
-
                     int indexOfButton = indexOfButtonPressed(buttonPressed.getText());
-
                     int rowForButtonPressed = indexOfButton / 4;
                     int colForButtonPressed = indexOfButton % 4;
-
                     int rowForEmpty = emptyCell / 4;
                     int colForEmpty = emptyCell % 4;
                     int rowDifference = rowForEmpty - rowForButtonPressed;
                     int colDifference = colForEmpty - colForButtonPressed;
-
-                    System.out.println("ROW DIFF: " + rowDifference + "\n" +
-                            "COL DIFF: " + colDifference);
-
                     boolean sameRow = (rowForButtonPressed == rowForEmpty);
                     boolean sameCol = (colForButtonPressed == colForEmpty);
                     boolean notDiagonal = (sameRow || sameCol);
-                    System.out.println("SAME ROW: " + sameRow + "\n" +
-                            "SAME COL: " + sameCol);
 
-                    System.out.println("DIAGONAL: " + notDiagonal);
                     if (notDiagonal) {
                         int difference = Math.abs(colDifference);
-                        System.out.println(difference);
 
                         if (colDifference < 0 & sameRow) {
                             for (int i = 0; i < difference; i++) {
@@ -105,11 +90,9 @@ public class TileGUI extends JFrame {
                         }
 
                         difference = Math.abs(rowDifference);
-                        System.out.println(difference);
 
                         if (rowDifference < 0 & sameCol) {
                             for (int i = 0; i < difference; i++) {
-                                System.out.println("INDEXINROW: " + i);
                                 buttons[rowForEmpty + i][colForEmpty].setText(buttons[rowForEmpty + (i + 1)][colForEmpty].getText());
                             }
                         } else if (rowDifference > 0 & sameCol) {
@@ -123,11 +106,9 @@ public class TileGUI extends JFrame {
                         buttons[rowForButtonPressed][colForButtonPressed].setVisible(false);
                         emptyCell = getIndexOfBoard(rowForButtonPressed, colForButtonPressed);
 
-
-
                     }
                         if (isFinished()){
-                            //TODO, fixa så att knapparna diaktiveras.
+                            deactivateAllButtons();
                             JOptionPane.showMessageDialog(null, "Du vann, grattis!");
                         }
                 }
@@ -157,11 +138,13 @@ public class TileGUI extends JFrame {
     public int getIndexOfBoard(int i, int j) {
         return ((i * 4) + j);
     }
+
     public void fillWinningArray() {
         for (int i = 1; i < size; i++){
             winningString[i - 1] = Integer.toString(i);
         }
     }
+
     private boolean isFinished() {
         for (int i = winningString.length - 1; i >= 0; i--) {
             int row = i / 4;
@@ -173,6 +156,14 @@ public class TileGUI extends JFrame {
             }
         }
         return true;
+    }
+
+    private void deactivateAllButtons() {
+        for (int r = 0; r < buttons.length; r++) {
+            for (int c = 0; c < buttons[r].length; c++) {
+                buttons[r][c].setEnabled(false);
+            }
+        }
     }
 
 }
